@@ -10,7 +10,7 @@ logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s'
 
 
 bot = TelegramClient('bot', int(os.environ['API_ID']), os.environ['API_HASH']).start(bot_token=os.environ['BOT_TOKEN'])
-BOT_NAME = "@net_otvet_bot"
+BOTNAME = "@net_otvet_bot"
 
 
 with open('net.txt', 'r', encoding='utf-8') as f:
