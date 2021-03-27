@@ -20,28 +20,28 @@ with open('da.txt', 'r', encoding='utf-8') as f:
 
 
 
-@bot.on(events.NewMessage(pattern=r'(?i)^(|.*\s)нет\W*$', incoming=True))
+@bot.on(events.NewMessage(pattern=r'(?i)^(|.*\s)не+т\W*$', incoming=True))
 async def handle_net(event):
     word = choice(net).capitalize()
     await event.respond(word)
     print(event.chat_id, '  \tНет -', word)
 
 
-@bot.on(events.NewMessage(pattern=r'(?i)^(|.*\s)да\W*$', incoming=True))
+@bot.on(events.NewMessage(pattern=r'(?i)^(|.*\s)да+\W*$', incoming=True))
 async def handle_da(event):
     word = choice(da).capitalize()
     await event.respond(word)
     print(event.chat_id, '  \tДа -', word)
 
 
-@bot.on(events.NewMessage(pattern=r'(?i)^лол$', incoming=True))
+@bot.on(events.NewMessage(pattern=r'(?i)^ло+л$', incoming=True))
 async def handle_kek(event):
     await event.respond('Кек')
     await event.respond('Чебурек')
     print(event.chat_id, '  \tЛол - Кек Чебурек')
 
 
-@bot.on(events.NewMessage(pattern=r'(?i)^кек$', incoming=True))
+@bot.on(events.NewMessage(pattern=r'(?i)^ке+к$', incoming=True))
 async def handle_lol(event):
     await event.respond('Лол')
     await event.respond('Арбидол')
