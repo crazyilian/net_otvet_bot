@@ -8,7 +8,6 @@ import os
 logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',
                     level=logging.WARNING)
 
-
 bot = TelegramClient('bot', int(os.environ['API_ID']), os.environ['API_HASH']).start(bot_token=os.environ['BOT_TOKEN'])
 BOTNAME = "@net_otvet_bot"
 
@@ -17,6 +16,8 @@ with open('net.txt', 'r', encoding='utf-8') as f:
     net = f.read().strip().split()
 with open('da.txt', 'r', encoding='utf-8') as f:
     da = f.read().strip().split()
+
+
 
 
 @bot.on(events.NewMessage(pattern=r'(?i)^(|.*\s)нет\W*$', incoming=True))
@@ -31,12 +32,10 @@ async def handle_da(event):
     await event.respond(word)
 
 
-
 @bot.on(events.NewMessage(pattern=r'(?i)^лол$', incoming=True))
 async def handle_kek(event):
     await event.respond('Кек')
     await event.respond('Чебурек')
-    
 
 
 @bot.on(events.NewMessage(pattern=r'(?i)^кек$', incoming=True))
@@ -56,6 +55,8 @@ async def help(event):
 ▪️ Лол
 Наслаждайся остроумным общением с друзьями! 👌
     '''.strip())
+
+
 
 
 bot.run_until_disconnected()
