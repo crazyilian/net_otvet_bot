@@ -35,6 +35,7 @@ async def handle_net(event):
     word = choice(net).capitalize()
     await event.respond(word)
     print(event.chat_id, '  \tНет -', word)
+    add_block(event.chat_id)
 
 
 @bot.on(events.NewMessage(pattern=r'(?i)^(|.*\s)(да+|da+)\W*$', incoming=True, func=lambda e: not is_in_block(e.chat_id)))
@@ -42,6 +43,7 @@ async def handle_da(event):
     word = choice(da).capitalize()
     await event.respond(word)
     print(event.chat_id, '  \tДа -', word)
+    add_block(event.chat_id)
 
 
 @bot.on(events.NewMessage(pattern=r'(?i)^(ло+л|lo+l)$', incoming=True, func=lambda e: not is_in_block(e.chat_id)))
@@ -49,6 +51,7 @@ async def handle_kek(event):
     await event.respond('Кек')
     await event.respond('Чебурек')
     print(event.chat_id, '  \tЛол - Кек Чебурек')
+    add_block(event.chat_id)
 
 
 @bot.on(events.NewMessage(pattern=r'(?i)^(ке+к|ke+k)$', incoming=True, func=lambda e: not is_in_block(e.chat_id)))
@@ -56,6 +59,7 @@ async def handle_lol(event):
     await event.respond('Лол')
     await event.respond('Арбидол')
     print(event.chat_id, '  \tКек - Лол Арбидол')
+    add_block(event.chat_id)
 
 
 @bot.on(events.NewMessage(pattern=fr'(?i)^/help({BOTNAME}|)(\s|$)', incoming=True))
