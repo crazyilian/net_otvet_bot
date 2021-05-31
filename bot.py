@@ -72,8 +72,13 @@ async def help(event):
 ▪️ Кек
 ▪️ Лол
 Наслаждайся остроумным общением с друзьями! 👌
+
+Таймаут ответов: 3 минуты.
     '''.strip())
 
+@bot.on(events.NewMessage(pattern=fr'(?i)^/start({BOTNAME}|)(\s|$)', incoming=True))
+async def start(event):
+    await help(event)
 
 
 bot.run_until_disconnected()
