@@ -37,7 +37,7 @@ def block_chat(chatid, timeout):
 def choose(words):
     base = random.choice(list(words.keys()))
     prefix = random.choice(words[base])
-    return (prefix + ' ' + base).strip().capitilize()
+    return (prefix + ' ' + base).strip().capitalize()
 
 
 @bot.on(telethon.events.NewMessage(pattern=r'(?i)^(|.*\W)([nн]+[eе]+[tт]+)\W*$', incoming=True, func=lambda e: e.chat_id not in blocked_chats))
