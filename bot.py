@@ -35,7 +35,7 @@ def block_chat(chatid, timeout):
 
 
 def choose(words):
-    base = random.choice(words.keys())
+    base = random.choice(list(words.keys()))
     prefix = random.choice(words[base])
     return (prefix + ' ' + base).strip().capitilize()
 
