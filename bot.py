@@ -38,8 +38,10 @@ def block_chat(chatid, timeout):
 
 
 def choose(words):
-    base = random.choice(list(words.keys()))
-    prefix = random.choice(words[base])
+    prefix = "#"
+    while len(prefix) > 0:  # no words like "у дрозда"
+        base = random.choice(list(words.keys()))
+        prefix = random.choice(words[base])
     return (prefix + ' ' + base).strip().capitalize()
 
 
