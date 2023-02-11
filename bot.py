@@ -4,6 +4,7 @@ import logging
 import os
 import json
 import asyncio
+import time
 
 
 logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s', level=logging.WARNING)
@@ -26,6 +27,8 @@ for word in words:
 
 async def unblock_chat(chatid, until):
     await asyncio.sleep(max(0, until - time.time()))
+    if blocked_chats.get(chatid, 0) <= time.time():
+        blocked_chats.pop(chatid)
 
 
 def block_chat(chatid, timeout):
@@ -67,7 +70,7 @@ async def help(event):
 Добавь бота в группу и наслаждайся остроумным общением! 👌
 (не забудьте предоставить права на чтение всех сообщений).
 
-Таймаут ответов: 3 минуты.
+Бот не будет отвечать на сообщения в одном чате чаще, чем 1 раз в 3 минуты.
     '''.strip())
 
 @bot.on(telethon.events.NewMessage(pattern=fr'(?i)^/start({BOTNAME}|)(\s|$)', incoming=True))
