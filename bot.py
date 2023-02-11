@@ -48,7 +48,8 @@ async def handle_net(event):
     word = choose(net)
     await event.reply(word)
     logging.info(f'{event.chat_id}   \tНет - {word}')
-    block_chat(event.chat_id, 3 * 60)
+    if not isinstance(msg.chat, telethon.types.User):
+        block_chat(event.chat_id, 3 * 60)
 
 
 @bot.on(telethon.events.NewMessage(pattern=r'(?i)^(|.*\W)([dд]+[aа]+)\W*$', incoming=True, func=lambda e: e.chat_id not in blocked_chats))
@@ -56,7 +57,8 @@ async def handle_da(event):
     word = choose(da)
     await event.reply(word)
     logging.info(f'{event.chat_id}   \tДа - {word}')
-    block_chat(event.chat_id, 3 * 60)
+    if not isinstance(msg.chat, telethon.types.User):
+        block_chat(event.chat_id, 3 * 60)
 
 
 
@@ -70,7 +72,7 @@ async def help(event):
 Добавь бота в группу и наслаждайся остроумным общением! 👌
 (не забудьте предоставить права на чтение всех сообщений).
 
-Бот не будет отвечать на сообщения в одном чате чаще, чем 1 раз в 3 минуты.
+Бот не будет отвечать на сообщения в одном чате чаще, чем 1 раз в 3 минуты. В личных сообщениях он работает без ограничений.
     '''.strip())
 
 @bot.on(telethon.events.NewMessage(pattern=fr'(?i)^/start({BOTNAME}|)(\s|$)', incoming=True))
