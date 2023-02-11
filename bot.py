@@ -1,82 +1,76 @@
-from telethon import TelegramClient
-from telethon import events
-from random import choice
+import telethon
+import random
 import logging
 import os
-from datetime import datetime, timedelta
+import json
+import asyncio
 
 
-logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',
-                    level=logging.WARNING)
+logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s', level=logging.WARNING)
 
-bot = TelegramClient('bot', int(os.environ['API_ID']), os.environ['API_HASH']).start(bot_token=os.environ['BOT_TOKEN'])
+bot = telethon.TelegramClient('bot', int(os.environ['API_ID']), os.environ['API_HASH']).start(bot_token=os.environ['BOT_TOKEN'])
 BOTNAME = "@net_otvet_bot"
-block = dict()
+blocked_chats = dict()
 
-with open('net.txt', 'r', encoding='utf-8') as f:
-    net = f.read().strip().split()
-with open('da.txt', 'r', encoding='utf-8') as f:
-    da = f.read().strip().split()
+with open('words.json', 'r', encoding='utf-8') as f:
+    words = json.load(f)
 
-
-def add_block(chatid):
-    block[chatid] = datetime.now()
-
-
-def is_in_block(chatid):
-    if chatid not in block:
-        return False
-    dt = datetime.now() - block[chatid]
-    return dt < timedelta(minutes=3)
+da = {}
+net = {}
+for word in words:
+    if word.endswith('да'):
+        da[word] = words[word]
+    else:
+        net[word] = words[word]
 
 
-@bot.on(events.NewMessage(pattern=r'(?i)^(|.*\s)(не+т|ne+t)\W*$', incoming=True, func=lambda e: not is_in_block(e.chat_id)))
+async def unblock_chat(chatid, until):
+    await asyncio.sleep(max(0, until - time.time()))
+
+
+def block_chat(chatid, timeout):
+    until = time.time() + timeout
+    blocked_chats[chatid] = until
+    asyncio.get_running_loop().create_task(unblock_chat(chatid, until))
+
+
+def choose(words):
+    base = random.choice(words.keys())
+    prefix = random.choice(words[base])
+    return (prefix + ' ' + base).strip().capitilize()
+
+
+@bot.on(telethon.events.NewMessage(pattern=r'(?i)^(|.*\W)([nн]+[eе]+[tт]+)\W*$', incoming=True, func=lambda e: e.chat_id not in blocked_chats))
 async def handle_net(event):
-    word = choice(net).capitalize()
-    await event.respond(word)
-    print(event.chat_id, '  \tНет -', word)
-    add_block(event.chat_id)
+    word = choose(net)
+    await event.reply(word)
+    logging.info(f'{event.chat_id}   \tНет - {word}')
+    block_chat(event.chat_id, 3 * 60)
 
 
-@bot.on(events.NewMessage(pattern=r'(?i)^(|.*\s)(да+|da+)\W*$', incoming=True, func=lambda e: not is_in_block(e.chat_id)))
+@bot.on(telethon.events.NewMessage(pattern=r'(?i)^(|.*\W)([dд]+[aа]+)\W*$', incoming=True, func=lambda e: e.chat_id not in blocked_chats))
 async def handle_da(event):
-    word = choice(da).capitalize()
-    await event.respond(word)
-    print(event.chat_id, '  \tДа -', word)
-    add_block(event.chat_id)
+    word = choose(da)
+    await event.reply(word)
+    logging.info(f'{event.chat_id}   \tДа - {word}')
+    block_chat(event.chat_id, 3 * 60)
 
 
-@bot.on(events.NewMessage(pattern=r'(?i)^(ло+л|lo+l)$', incoming=True, func=lambda e: not is_in_block(e.chat_id)))
-async def handle_kek(event):
-    await event.respond('Кек')
-    await event.respond('Чебурек')
-    print(event.chat_id, '  \tЛол - Кек Чебурек')
-    add_block(event.chat_id)
 
-
-@bot.on(events.NewMessage(pattern=r'(?i)^(ке+к|ke+k)$', incoming=True, func=lambda e: not is_in_block(e.chat_id)))
-async def handle_lol(event):
-    await event.respond('Лол')
-    await event.respond('Арбидол')
-    print(event.chat_id, '  \tКек - Лол Арбидол')
-    add_block(event.chat_id)
-
-
-@bot.on(events.NewMessage(pattern=fr'(?i)^/help({BOTNAME}|)(\s|$)', incoming=True))
+@bot.on(telethon.events.NewMessage(pattern=fr'(?i)^/help({BOTNAME}|)(\s|$)', incoming=True))
 async def help(event):
     await event.respond('''
 Привет! 🖐
-Без лишних слов, попробуй написать:
+Смысл бота очень простой. Попробуй написать сообщение, оканчивающееся на:
 ▪️ Да
 ▪️ Нет
-▪️ Кек
-▪️ Лол
-Наслаждайся остроумным общением с друзьями! 👌
+Добавь бота в группу и наслаждайся остроумным общением! 👌
+(не забудьте предоставить права на чтение всех сообщений).
 
 Таймаут ответов: 3 минуты.
     '''.strip())
 
-@bot.on(events.NewMessage(pattern=fr'(?i)^/start({BOTNAME}|)(\s|$)', incoming=True))
+@bot.on(telethon.events.NewMessage(pattern=fr'(?i)^/start({BOTNAME}|)(\s|$)', incoming=True))
 async def start(event):
     await help(event)
 
