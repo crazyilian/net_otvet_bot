@@ -50,7 +50,7 @@ async def handle_net(event):
     word = choose(net)
     await event.reply(word)
     logging.info(f'{event.chat_id}   \tНет - {word}')
-    if not isinstance(msg.chat, telethon.types.User):
+    if not isinstance(event.chat, telethon.types.User):
         block_chat(event.chat_id, 3 * 60)
 
 
@@ -59,7 +59,7 @@ async def handle_da(event):
     word = choose(da)
     await event.reply(word)
     logging.info(f'{event.chat_id}   \tДа - {word}')
-    if not isinstance(msg.chat, telethon.types.User):
+    if not isinstance(event.chat, telethon.types.User):
         block_chat(event.chat_id, 3 * 60)
 
 
